@@ -18,6 +18,13 @@ connection.once("open", () => {
   console.log("MongoDB database connection established successfully");
 });
 
+// Required files for routing
+const shiftsRouter = require("./routes/shifts");
+const usersRouter = require("./routes/users");
+// Routing implementation
+app.use("/shifts", shiftsRouter);
+app.use("/users", usersRouter);
+
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
 });
