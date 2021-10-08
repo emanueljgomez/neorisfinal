@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 export default class CreateUser extends Component {
   constructor(props) {
@@ -25,7 +26,11 @@ export default class CreateUser extends Component {
       username: this.state.username,
     };
 
-    alert(`El recurso ` + user + ` fue creado con éxito.`);
+    alert(`El recurso ` + user.username + ` fue creado con éxito.`);
+
+    axios
+      .post("http://localhost:5000/users/add", user)
+      .then((res) => console.log(res.data));
 
     this.setState({
       username: "",
