@@ -5,7 +5,7 @@ export default class Navbar extends Component {
   render() {
     return (
       <nav className="navbar navbar-dark bg-dark navbar-expand-lg">
-        <Link to="/" className="navbar-brand">
+        <Link to="/" className="navbar-brand" style={{ margin: 1 + "vw" }}>
           Turnos laborales
         </Link>
         <div className="collapse navbar-collapse">
