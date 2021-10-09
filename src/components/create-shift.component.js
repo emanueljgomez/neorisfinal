@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -7,26 +8,34 @@ export default class CreateShift extends Component {
     super(props);
 
     this.onChangeUsername = this.onChangeUsername.bind(this);
-    this.onChangeDescription = this.onChangeDescription.bind(this);
     this.onChangeDuration = this.onChangeDuration.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
+    this.onChangeDescription = this.onChangeDescription.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
       username: "",
+      duration: "",
       description: "",
-      duration: 0,
       date: new Date(),
       users: [],
+      shiftDays: [],
+      shiftNumbers: [],
     };
   }
 
-  // Hardcorded test user (erase later)
   componentDidMount() {
-    this.setState({
-      users: ["test user"],
-      username: "test user",
-    });
+    axios
+      .get("http://localhost:5000/users/")
+
+      .then((response) => {
+        if (response.data.length > 0) {
+          this.setState({
+            users: response.data.map((user) => user.username),
+            username: response.data[0].username,
+          });
+        }
+      });
   }
 
   onChangeUsername(e) {
@@ -35,15 +44,11 @@ export default class CreateShift extends Component {
     });
   }
 
-  onChangeDescription(e) {
-    this.setState({
-      description: e.target.value,
-    });
-  }
+  onChangeDuration() {
+    let select = document.getElementById("shift_number");
 
-  onChangeDuration(e) {
     this.setState({
-      duration: e.target.value,
+      duration: select.options[select.selectedIndex].value,
     });
   }
 
@@ -53,17 +58,44 @@ export default class CreateShift extends Component {
     });
   }
 
+  onChangeDescription(e) {
+    this.setState({
+      description: e.target.value,
+    });
+  }
+
   onSubmit(e) {
     e.preventDefault();
 
     const shift = {
       username: this.state.username,
-      description: this.state.description,
-      duration: this.state.duration,
       date: this.state.date,
+      duration: this.state.duration,
+      description: this.state.description,
     };
 
-    window.location = "/";
+    if (shift.duration === "") {
+      shift.duration = "1";
+      axios
+        .post("http://localhost:5000/shifts/add", shift)
+        .then((res) => console.log(res.data));
+    } else {
+      axios
+        .post("http://localhost:5000/shifts/add", shift)
+        .then((res) => console.log(res.data));
+    }
+
+    alert(
+      `\n[ NUEVO TURNO ASIGNADO ]\n` +
+        `\nRECURSO: ` +
+        shift.username +
+        `\n\nDÍA: ` +
+        shift.date +
+        `\n\nTURNO NRO: ` +
+        shift.duration
+    );
+
+    //window.location = "/";
   }
 
   render() {
@@ -78,7 +110,6 @@ export default class CreateShift extends Component {
               Seleccionar recurso:
             </label>
             <select
-              ref="userInput"
               required
               className="form-control"
               value={this.state.username}
@@ -112,15 +143,14 @@ export default class CreateShift extends Component {
               Seleccionar turno de trabajo:
             </label>
             <select
-              ref="userInput"
               required
+              id="shift_number"
               className="form-control"
-              value={this.state.duration}
               onChange={this.onChangeDuration}
             >
-              <option>Turno 1 [06:00 a 14:00 hs]</option>
-              <option>Turno 2 [14:00 a 22:00 hs]</option>
-              <option>Turno 3 [22:00 a 06:00 hs]</option>
+              <option value="1">Turno 1 [06:00 a 14:00 hs]</option>
+              <option value="2">Turno 2 [14:00 a 22:00 hs]</option>
+              <option value="3">Turno 3 [22:00 a 06:00 hs]</option>
             </select>
           </div>
 
@@ -128,6 +158,7 @@ export default class CreateShift extends Component {
           <div className="form-group" style={{ margin: 1 + "vw" }}>
             <label style={{ marginBottom: 0.5 + "vw" }}>Comentario:</label>
             <input
+              required
               type="text"
               className="form-control"
               value={this.state.description}
