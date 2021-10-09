@@ -95,7 +95,7 @@ export default class CreateShift extends Component {
         shift.duration
     );
 
-    //window.location = "/";
+    window.location = "/";
   }
 
   render() {
